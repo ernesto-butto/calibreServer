@@ -2,8 +2,11 @@ package application.controller;
 
 import java.util.concurrent.atomic.AtomicLong;
 
+import application.Application;
 import application.domain.Greeting;
 import application.service.CalibreConnectionService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.MediaType;
@@ -15,6 +18,8 @@ public class GreetingController {
     private static final String template = "Hello, %s!";
     private final AtomicLong counter = new AtomicLong();
 
+    private final Logger log = LoggerFactory.getLogger(Application.class);
+
 
     @Autowired
     CalibreConnectionService calibreConnectionService;
@@ -23,9 +28,21 @@ public class GreetingController {
     @ResponseBody
     public FileSystemResource getFile(@PathVariable("file_name") String fileName) {
 
+        log.info("Received reques for file "+fileName);
+
         String path = "/home/ubuntu/testFiles/"+fileName+".pdf";
 
+        log.info("Searchig for file "+path);
+
         FileSystemResource resource = new FileSystemResource(path);
+
+        if (resource.getFile().exists()){
+            log.info("file exists");
+        }else{
+            log.info("files does not exists");
+
+        }
+
 
         return resource;
 
