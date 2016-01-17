@@ -23,7 +23,7 @@ public class GreetingController {
     @ResponseBody
     public FileSystemResource getFile(@PathVariable("file_name") String fileName) {
 
-        String path = "/home/ubuntu/testFiles"+fileName+".pdf";
+        String path = "/home/ubuntu/testFiles/"+fileName+".pdf";
 
         FileSystemResource resource = new FileSystemResource(path);
 
