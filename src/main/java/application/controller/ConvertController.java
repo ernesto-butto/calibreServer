@@ -1,10 +1,12 @@
 package application.controller;
 
+import java.io.File;
 import java.util.concurrent.atomic.AtomicLong;
 
 import application.Application;
 import application.domain.Greeting;
 import application.service.CalibreConnectionService;
+import application.service.HtmlService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +15,7 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-public class GreetingController {
+public class ConvertController {
 
     private static final String template = "Hello, %s!";
     private final AtomicLong counter = new AtomicLong();
@@ -24,13 +26,32 @@ public class GreetingController {
     @Autowired
     CalibreConnectionService calibreConnectionService;
 
-    @RequestMapping(value = "/files/{file_name}", method = RequestMethod.GET)
+    @Autowired
+    HtmlService htmlService;
+
+
+    @RequestMapping(value = "/convert", method = RequestMethod.GET)
     @ResponseBody
-    public FileSystemResource getFile(@PathVariable("file_name") String fileName) {
+    public FileSystemResource convert(@RequestParam(value = "htmlUrl", required = true) String htmlUrl,
+                                      @RequestParam(value = "outputFormat", defaultValue = "mobi") String outputFormat
+    ) {
+        log.info("Received reques for url: "+htmlUrl);
 
-        log.info("Received reques for file "+fileName);
+        // 1 Guardar el html en local
+        String urlToConvert = htmlUrl;
 
-        String path = "/home/ubuntu/testFiles/"+fileName+".pdf";
+        String htmlContent = htmlService.getHtmlContent(urlToConvert);
+        String filename="ebookContent";
+
+        File file = htmlService.saveHtmlContentToFile(htmlContent, filename);
+
+        // 2 correr ebook convert
+
+
+
+        // 3 recoger el archivo y devolverlo
+
+        String path = "/home/ubuntu/testFiles/.pdf";
 
         log.info("Searchig for file "+path);
 
@@ -45,16 +66,5 @@ public class GreetingController {
 
 
         return resource;
-
-    }
-
-    @RequestMapping("/convert")
-    public Greeting greeting(@RequestParam(value="inputFile", required = true) String inputFile,
-                             @RequestParam(value="outputFormat", defaultValue="mobi") String outputFormat
-                             ) {
-
-
-        return new Greeting(counter.incrementAndGet(),
-                            String.format(template, "temp"));
     }
 }
