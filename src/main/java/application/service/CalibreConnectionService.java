@@ -13,37 +13,37 @@ public class CalibreConnectionService {
 
 
 
-    public boolean convert(String inputFile, String outputFile){
+	public boolean convert(String inputFile, String format){
 
+		String command = "ebook-convert "+inputFile + " " + inputFile+"."+format;
 
+		return true;
 
-        return true;
+	}
 
-    }
+	public String executeCommand(String command) {
 
-    public String executeCommand(String command) {
+		StringBuffer output = new StringBuffer();
 
-    		StringBuffer output = new StringBuffer();
+		Process p;
+		try {
+			p = Runtime.getRuntime().exec(command);
+			p.waitFor();
+			BufferedReader reader =
+					new BufferedReader(new InputStreamReader(p.getInputStream()));
 
-    		Process p;
-    		try {
-    			p = Runtime.getRuntime().exec(command);
-    			p.waitFor();
-    			BufferedReader reader =
-                                new BufferedReader(new InputStreamReader(p.getInputStream()));
+			String line = "";
+			while ((line = reader.readLine())!= null) {
+				output.append(line + "\n");
+			}
 
-                            String line = "";
-    			while ((line = reader.readLine())!= null) {
-    				output.append(line + "\n");
-    			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 
-    		} catch (Exception e) {
-    			e.printStackTrace();
-    		}
+		return output.toString();
 
-    		return output.toString();
-
-    	}
+	}
 
 
 

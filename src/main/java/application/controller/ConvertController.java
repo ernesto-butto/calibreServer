@@ -19,6 +19,7 @@ public class ConvertController {
 
     private static final String template = "Hello, %s!";
     private final AtomicLong counter = new AtomicLong();
+    private String caliberCommandlineOS="/Applications/calibre.app/Contents/console.app/Contents/MacOS/";
 
     private final Logger log = LoggerFactory.getLogger(Application.class);
 
@@ -41,13 +42,16 @@ public class ConvertController {
         String urlToConvert = htmlUrl;
 
         String htmlContent = htmlService.getHtmlContent(urlToConvert);
-        String filename="ebookContent";
+        String bookTitle="ebookContent";
 
-        File file = htmlService.saveHtmlContentToFile(htmlContent, filename);
+        File file = htmlService.saveHtmlContentToFile(htmlContent, bookTitle);
+
+        String filename = file.getName();
+
 
         // 2 correr ebook convert
 
-
+        calibreConnectionService.convert(file.getName(),outputFormat);
 
         // 3 recoger el archivo y devolverlo
 
