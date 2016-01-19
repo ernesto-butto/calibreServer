@@ -38,28 +38,23 @@ public class ConvertController {
     @RequestMapping(value = "/convert", method = RequestMethod.GET)
     @ResponseBody
     public FileSystemResource convert(@RequestParam(value = "htmlUrl", required = true) String htmlUrl,
+                                      @RequestParam(value = "title", required = true) String title,
                                       @RequestParam(value = "outputFormat", defaultValue = "mobi") String outputFormat
     ) {
         log.info("Received reques for url: "+htmlUrl);
 
         // 1 Guardar el html en local
-        String urlToConvert = htmlUrl;
+        String htmlContent = htmlService.getHtmlContent(htmlUrl);
 
-        String htmlContent = htmlService.getHtmlContent(urlToConvert);
-        String bookTitle="ebookContent";
-
-        File file = htmlService.saveHtmlContentToFile(htmlContent,globalVariables.getContentFolder(),bookTitle);
-
-        String filename = file.getName();
-
+        File file = htmlService.saveHtmlContentToFile(htmlContent, globalVariables.getContentFolder(), title);
 
         // 2 correr ebook convert
 
-        calibreConnectionService.convert(file.getName(),outputFormat);
+        String path = calibreConnectionService.convert(file.getName(),outputFormat);
+
 
         // 3 recoger el archivo y devolverlo
 
-        String path = "/home/ubuntu/testFiles/.pdf";
 
         log.info("Searchig for file "+path);
 

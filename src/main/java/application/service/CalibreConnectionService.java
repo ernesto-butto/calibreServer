@@ -12,6 +12,7 @@ import java.io.InputStreamReader;
 @Service
 public class CalibreConnectionService {
 
+	public static final String CONVERSION_SUCCESS = "Output saved to";
 	// In case is not in the local path
 	String callibreConvertLocation="";
 
@@ -27,14 +28,42 @@ public class CalibreConnectionService {
 	public String convert(String inputFilePath, String format){
 
 		String filePathWithNoSuffix=stripSuffix(inputFilePath);
-
+		String resultingPath = "";
 		String command = "ebook-convert "+inputFilePath + " " + filePathWithNoSuffix+"."+format;
 
 		// add the ebook-convert location path if needed
 		command=this.getCallibreConvertLocation() + "/"+command;
 
-		return executeCommand(command);
+		String commandResponse = executeCommand(command);
 
+		if (commandResponse.contains("Output saved to")){
+
+			return (extractResutlingPath(commandResponse));
+
+		}   else{
+
+			return null;
+
+		}
+
+	}
+
+	private String extractResutlingPath(String commandResponse) {
+
+		String[] arrayOfLines = commandResponse.split("\n");
+		String ouputFilePath = null;
+		for (String line : arrayOfLines){
+
+			if (line.contains(CONVERSION_SUCCESS)){
+
+				ouputFilePath = line.split(" ")[line.split(" ").length-1];
+
+
+			}
+
+		}
+
+		return ouputFilePath;
 	}
 
 	private String stripSuffix(String inputFilePath) {
