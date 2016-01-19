@@ -17,6 +17,8 @@ public class CalibreConnectionService {
 
 		String command = "ebook-convert "+inputFile + " " + inputFile+"."+format;
 
+		executeCommand(command);
+
 		return true;
 
 	}
