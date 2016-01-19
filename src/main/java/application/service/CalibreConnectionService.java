@@ -11,7 +11,16 @@ import java.io.InputStreamReader;
 @Service
 public class CalibreConnectionService {
 
+	// In case is not in the local path
+	String callibreConvertLocation="";
 
+	public String getCallibreConvertLocation() {
+		return callibreConvertLocation;
+	}
+
+	public void setCallibreConvertLocation(String callibreConvertLocation) {
+		this.callibreConvertLocation = callibreConvertLocation;
+	}
 
 	public boolean convert(String inputFile, String format){
 
