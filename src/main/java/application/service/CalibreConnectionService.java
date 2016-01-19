@@ -1,5 +1,6 @@
 package application.service;
 
+import org.apache.commons.io.FilenameUtils;
 import org.springframework.stereotype.Service;
 
 import java.io.BufferedReader;
@@ -25,12 +26,20 @@ public class CalibreConnectionService {
 
 	public String convert(String inputFilePath, String format){
 
-		String command = "ebook-convert "+inputFilePath + " " + inputFilePath+"."+format;
+		String filePathWithNoSuffix=stripSuffix(inputFilePath);
+
+		String command = "ebook-convert "+inputFilePath + " " + filePathWithNoSuffix+"."+format;
 
 		// add the ebook-convert location path if needed
 		command=this.getCallibreConvertLocation() + "/"+command;
 
 		return executeCommand(command);
+
+	}
+
+	private String stripSuffix(String inputFilePath) {
+
+		return FilenameUtils.removeExtension(inputFilePath);
 
 	}
 

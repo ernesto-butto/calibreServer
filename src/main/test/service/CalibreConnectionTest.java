@@ -52,7 +52,7 @@ public class CalibreConnectionTest {
         calibreConnectionService.setCallibreConvertLocation(calibreConvertLocation);
 
         String urlToConvert = htmlUrl;
-        String outputFormat="pdf";
+        String outputFormat="mobi";
 
         String htmlContent = htmlService.getHtmlContent(urlToConvert);
         String bookTitle = "ebookContent";
