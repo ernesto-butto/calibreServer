@@ -41,6 +41,7 @@ public class CalibreConnectionTest {
 
     public void convertServiceTest(){
         String htmlUrl = "htmlUrl=http://jessewarden.com/2008/11/agile-chronicles-1-stressful.html";
+        String calibreConvertLocation = "/Applications/calibre.app/Contents/console.app/Contents/MacOS/ebook-convert";
 
         String urlToConvert = htmlUrl;
         String outputFormat="pdf";
