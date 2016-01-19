@@ -40,12 +40,12 @@ public class HtmlService {
 
     }
 
-    public File saveHtmlContentToFile(String htmlContent,String filename){
+    public File saveHtmlContentToFile(String htmlContent,String outputFolder,String filename){
         File file = null;
         try {
 
 
-            file = new File("./"+filename+".html");
+            file = new File(outputFolder + "/"+filename+".html");
 
             // if file doesnt exists, then create it
             if (!file.exists()) {

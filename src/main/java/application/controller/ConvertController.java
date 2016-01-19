@@ -7,6 +7,7 @@ import application.Application;
 import application.domain.Greeting;
 import application.service.CalibreConnectionService;
 import application.service.HtmlService;
+import application.shared.GlobalVariables;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +31,9 @@ public class ConvertController {
     @Autowired
     HtmlService htmlService;
 
+    @Autowired
+    GlobalVariables globalVariables;
+
 
     @RequestMapping(value = "/convert", method = RequestMethod.GET)
     @ResponseBody
@@ -44,7 +48,7 @@ public class ConvertController {
         String htmlContent = htmlService.getHtmlContent(urlToConvert);
         String bookTitle="ebookContent";
 
-        File file = htmlService.saveHtmlContentToFile(htmlContent, bookTitle);
+        File file = htmlService.saveHtmlContentToFile(htmlContent,globalVariables.getContentFolder(),bookTitle);
 
         String filename = file.getName();
 
