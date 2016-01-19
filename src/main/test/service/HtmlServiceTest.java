@@ -2,6 +2,7 @@ package service;
 
 import application.Application;
 import application.service.HtmlService;
+import application.shared.GlobalVariables;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -25,6 +26,9 @@ public class HtmlServiceTest {
     @Autowired
     HtmlService htmlService;
 
+    @Autowired
+    GlobalVariables globalVariables;
+
     @Test
     public void getHtmlContentTest(){
 
@@ -44,7 +48,7 @@ public class HtmlServiceTest {
 
         String htmlContent = htmlService.getHtmlContent(urlToConvert);
 
-        File file = htmlService.saveHtmlContentToFile(htmlContent, "ebookContent");
+        File file = htmlService.saveHtmlContentToFile(htmlContent,globalVariables.getContentFolder(), "ebookContent");
 
         Assert.assertTrue(file.exists());
     }

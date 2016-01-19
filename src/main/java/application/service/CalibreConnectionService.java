@@ -22,13 +22,15 @@ public class CalibreConnectionService {
 		this.callibreConvertLocation = callibreConvertLocation;
 	}
 
-	public boolean convert(String inputFile, String format){
 
-		String command = "ebook-convert "+inputFile + " " + inputFile+"."+format;
+	public String convert(String inputFilePath, String format){
 
-		executeCommand(command);
+		String command = "ebook-convert "+inputFilePath + " " + inputFilePath+"."+format;
 
-		return true;
+		// add the ebook-convert location path if needed
+		command=this.getCallibreConvertLocation() + "/"+command;
+
+		return executeCommand(command);
 
 	}
 
