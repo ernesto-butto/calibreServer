@@ -37,7 +37,7 @@ public class CalibreConnectionService {
 		String command = "ebook-convert "+inputFilePath + " " + filePathWithNoSuffix+"."+format;
 
 		// add the ebook-convert location path if needed
-		command=this.getCallibreConvertLocation() + "/"+command;
+		command=this.getCallibreConvertLocation() +command;
 
 		String commandResponse = executeCommand(command);
 

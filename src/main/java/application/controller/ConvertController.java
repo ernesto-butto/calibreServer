@@ -39,12 +39,14 @@ public class ConvertController {
         long startTime = System.nanoTime();
 
         // 1 Guardar el html en local
+        log.info("Retreiving html content");
         String htmlContent = htmlService.getHtmlContent(htmlUrl);
 
+        log.info("Saving html content to file");
         File file = htmlService.saveHtmlContentToFile(htmlContent, globalVariables.getContentFolder(), title);
 
         // 2 correr ebook convert
-
+        log.info("Converting html content");
         String path = calibreConnectionService.convert(file.getAbsolutePath(), outputFormat);
 
         if (path==null){
@@ -53,9 +55,10 @@ public class ConvertController {
 
         }
 
+        log.info("OK");
         // log duration of process
 
-        log.info("The process took :"+(System.nanoTime() - startTime) +" nano seconds");
+        log.info("The process took :"+(System.nanoTime() - startTime)/ 1000000000.0 +" seconds");
 
         // 3 recoger el archivo y devolverlo
 
