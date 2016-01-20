@@ -1,6 +1,8 @@
 package application.configuration;
 
 import application.service.CalibreConnectionService;
+import application.service.HtmlService;
+import application.shared.GlobalVariables;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -20,6 +22,10 @@ public class ApplicationConfiguration {
     @Autowired
     CalibreConnectionService calibreConnectionService;
 
+    @Autowired
+    GlobalVariables globalVariables;
+
+
     @Bean
     public CalibreConnectionService configureCallibreService(){
 
@@ -27,8 +33,19 @@ public class ApplicationConfiguration {
             calibreConnectionService.setCallibreConvertLocation(env.getProperty("ebook-convert-location"));
         // else leave default
 
+
         return calibreConnectionService;
     }
 
+    @Bean
+    public GlobalVariables htmlServiceConfiguration(){
+
+        if (env.getProperty("output-folder")!=null)
+
+        globalVariables.setContentFolder(env.getProperty("output-folder"));
+
+        return globalVariables;
+
+    }
 
 }

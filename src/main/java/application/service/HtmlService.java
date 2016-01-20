@@ -1,5 +1,7 @@
 package application.service;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.io.BufferedWriter;
@@ -15,6 +17,8 @@ import java.util.Scanner;
  */
 @Service
 public class HtmlService {
+
+    private final Logger log = LoggerFactory.getLogger(HtmlService.class);
 
 
     public String getHtmlContent(String targetUrl){
@@ -42,10 +46,12 @@ public class HtmlService {
 
     public File saveHtmlContentToFile(String htmlContent,String outputFolder,String filename){
         File file = null;
+        String htmlFile = outputFolder + "/"+filename+".html";
+
         try {
 
-
-            file = new File(outputFolder + "/"+filename+".html");
+            log.info("Saving html content to "+htmlFile);
+            file = new File(htmlFile);
 
             // if file doesnt exists, then create it
             if (!file.exists()) {

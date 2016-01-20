@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
  * Created by poolebu on 1/19/16.
  */
 @Service
-@Scope("singleton")
 public class GlobalVariables {
 
     String contentFolder="/Users/poolebu/Desktop/ebookContentDir/";
