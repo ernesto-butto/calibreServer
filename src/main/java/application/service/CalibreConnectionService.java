@@ -1,6 +1,8 @@
 package application.service;
 
 import org.apache.commons.io.FilenameUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.io.BufferedReader;
@@ -16,6 +18,9 @@ public class CalibreConnectionService {
 	// In case is not in the local path
 	String callibreConvertLocation="";
 
+	private final Logger log = LoggerFactory.getLogger(CalibreConnectionService.class);
+
+
 	public String getCallibreConvertLocation() {
 		return callibreConvertLocation;
 	}
@@ -28,7 +33,7 @@ public class CalibreConnectionService {
 	public String convert(String inputFilePath, String format){
 
 		String filePathWithNoSuffix=stripSuffix(inputFilePath);
-		String resultingPath = "";
+
 		String command = "ebook-convert "+inputFilePath + " " + filePathWithNoSuffix+"."+format;
 
 		// add the ebook-convert location path if needed
@@ -38,10 +43,13 @@ public class CalibreConnectionService {
 
 		if (commandResponse.contains("Output saved to")){
 
+			log.info(commandResponse);
+
 			return (extractResutlingPath(commandResponse));
 
 		}   else{
 
+			log.error(commandResponse);
 			return null;
 
 		}
