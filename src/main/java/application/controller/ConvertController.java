@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,13 +29,14 @@ public class ConvertController {
     GlobalVariables globalVariables;
 
 
-    @RequestMapping(value = "/convert", method = RequestMethod.GET)
+    @RequestMapping(value = "/convert", method = RequestMethod.GET , produces = MediaType.APPLICATION_OCTET_STREAM_VALUE )
     @ResponseBody
     public ResponseEntity<FileSystemResource> convert(@RequestParam(value = "htmlUrl", required = true) String htmlUrl,
                                       @RequestParam(value = "title", required = true) String title,
                                       @RequestParam(value = "outputFormat", defaultValue = "mobi") String outputFormat
     ) {
         log.info("Received reques for url: "+htmlUrl);
+        long startTime = System.nanoTime();
 
         // 1 Guardar el html en local
         String htmlContent = htmlService.getHtmlContent(htmlUrl);
@@ -43,13 +45,17 @@ public class ConvertController {
 
         // 2 correr ebook convert
 
-        String path = calibreConnectionService.convert(file.getName(), outputFormat);
+        String path = calibreConnectionService.convert(file.getAbsolutePath(), outputFormat);
 
         if (path==null){
             log.error("There was an error converting the ebook ");
             return new ResponseEntity<FileSystemResource>(HttpStatus.INTERNAL_SERVER_ERROR);
 
         }
+
+        // log duration of process
+
+        log.info("The process took :"+(System.nanoTime() - startTime) +" nano seconds");
 
         // 3 recoger el archivo y devolverlo
 
