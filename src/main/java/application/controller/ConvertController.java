@@ -1,9 +1,14 @@
 package application.controller;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
+
 import application.service.CalibreConnectionService;
 import application.service.HtmlService;
 import application.shared.GlobalVariables;
+import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,37 +37,47 @@ public class ConvertController {
     @RequestMapping(value = "/convert", method = RequestMethod.GET , produces = MediaType.APPLICATION_OCTET_STREAM_VALUE )
     @ResponseBody
     public ResponseEntity<FileSystemResource> convert(@RequestParam(value = "htmlUrl", required = true) String htmlUrl,
-                                      @RequestParam(value = "title", required = true) String title,
-                                      @RequestParam(value = "outputFormat", defaultValue = "mobi") String outputFormat
+                                                      @RequestParam(value = "title", required = true) String title,
+                                                      @RequestParam(value = "outputFormat", defaultValue = "mobi") String outputFormat
     ) {
-        log.info("Received reques for url: "+htmlUrl);
+
         long startTime = System.nanoTime();
 
+        log.info("Receving request with htmlUrl: "+htmlUrl + ",title: "+title+", outputFormat: "+outputFormat);
+
+        log.info("Removing suffix and replacing white spaces for title if necessary");
+        // remove suffix
+        title = FilenameUtils.removeExtension(title);
+        // replace white spaces with underscore
+        title = title.replaceAll(" ", "_");
+
         // 1 Guardar el html en local
-        log.info("Retreiving html content");
+        log.info("Retrieving html content form url");
         String htmlContent = htmlService.getHtmlContent(htmlUrl);
 
         log.info("Saving html content to file");
-        File file = htmlService.saveHtmlContentToFile(htmlContent, globalVariables.getContentFolder(), title);
+        File htmlContentFile = htmlService.saveHtmlContentToFile(htmlContent, globalVariables.getContentFolder(), title);
 
         // 2 correr ebook convert
         log.info("Converting html content");
-        String path = calibreConnectionService.convert(file.getAbsolutePath(), outputFormat);
+        String path = calibreConnectionService.convert(htmlContentFile.getAbsolutePath(), outputFormat);
 
         if (path==null){
             log.error("There was an error converting the ebook ");
-            return new ResponseEntity<FileSystemResource>(HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new RuntimeException("There was an error converting the ebook");
 
         }
 
         log.info("OK");
         // log duration of process
 
-        log.info("The process took :"+(System.nanoTime() - startTime)/ 1000000000.0 +" seconds");
 
         // 3 recoger el archivo y devolverlo
 
         log.info("Searchig for file "+path);
+
+
+
 
         FileSystemResource resource = new FileSystemResource(path);
 
@@ -72,6 +87,8 @@ public class ConvertController {
             log.info("files does not exists "+resource.getFile().getAbsolutePath());
 
         }
+
+        log.info("The process took :"+(System.nanoTime() - startTime)/ 1000000000.0 +" seconds");
 
         return new ResponseEntity<FileSystemResource>(resource, HttpStatus.OK);
 

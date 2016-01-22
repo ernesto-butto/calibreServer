@@ -1,5 +1,6 @@
 package application.service;
 
+import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -46,6 +47,7 @@ public class HtmlService {
 
     public File saveHtmlContentToFile(String htmlContent,String outputFolder,String filename){
         File file = null;
+
         String htmlFile = outputFolder + "/"+filename+".html";
 
         try {
