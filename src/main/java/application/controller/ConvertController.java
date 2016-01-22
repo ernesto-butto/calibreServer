@@ -34,7 +34,7 @@ public class ConvertController {
     GlobalVariables globalVariables;
 
 
-    @RequestMapping(value = "/convert", method = RequestMethod.GET , produces = MediaType.APPLICATION_OCTET_STREAM_VALUE )
+    @RequestMapping(value = "/convert", method = RequestMethod.GET )
     @ResponseBody
     public ResponseEntity<FileSystemResource> convert(@RequestParam(value = "htmlUrl", required = true) String htmlUrl,
                                                       @RequestParam(value = "title", required = true) String title,
