@@ -1,20 +1,15 @@
 package application.controller;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
-
 import application.service.CalibreConnectionService;
 import application.service.HtmlService;
-import application.shared.GlobalVariables;
+import application.service.WkHtmlToPdfService;
+import application.shared.GlobalServices;
 import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,13 +23,16 @@ public class ConvertController {
     CalibreConnectionService calibreConnectionService;
 
     @Autowired
+    WkHtmlToPdfService wkHtmlToPdfService;
+
+    @Autowired
     HtmlService htmlService;
 
     @Autowired
-    GlobalVariables globalVariables;
+    GlobalServices globalServices;
 
 
-    @RequestMapping(value = "/convert", method = RequestMethod.GET , produces = MediaType.APPLICATION_OCTET_STREAM_VALUE )
+    @RequestMapping(value = "/convert", method = RequestMethod.GET )
     @ResponseBody
     public ResponseEntity<FileSystemResource> convert(@RequestParam(value = "htmlUrl", required = true) String htmlUrl,
                                                       @RequestParam(value = "title", required = true) String title,
@@ -42,44 +40,36 @@ public class ConvertController {
     ) {
 
         long startTime = System.nanoTime();
+        String outputPath = "";
 
         log.info("Receving request with htmlUrl: "+htmlUrl + ",title: "+title+", outputFormat: "+outputFormat);
 
         log.info("Removing suffix and replacing white spaces for title if necessary");
+
+        // CLEAN TITLE
+
         // remove suffix
         title = FilenameUtils.removeExtension(title);
-        // replace white spaces with underscore
+        //  replace white spaces with underscore
         title = title.replaceAll(" ", "_");
 
-        // 1 Guardar el html en local
-        log.info("Retrieving html content form url");
-        String htmlContent = htmlService.getHtmlContent(htmlUrl);
+        // CONVERT
+        if (outputFormat.equalsIgnoreCase("pdf")){
 
-        log.info("Saving html content to file");
-        File htmlContentFile = htmlService.saveHtmlContentToFile(htmlContent, globalVariables.getContentFolder(), title);
+            outputPath = wkHtmlToPdfService.convert(htmlUrl,title,outputFormat);
 
-        // 2 correr ebook convert
-        log.info("Converting html content");
-        String path = calibreConnectionService.convert(htmlContentFile.getAbsolutePath(), outputFormat);
+        }else {
 
-        if (path==null){
-            log.error("There was an error converting the ebook ");
-            throw new RuntimeException("There was an error converting the ebook");
+            outputPath = calibreConnectionService.convert(htmlUrl, title, outputFormat, this);
+
 
         }
 
-        log.info("OK");
-        // log duration of process
-
-
         // 3 recoger el archivo y devolverlo
 
-        log.info("Searchig for file "+path);
+        log.info("Searchig for file "+outputPath);
 
-
-
-
-        FileSystemResource resource = new FileSystemResource(path);
+        FileSystemResource resource = new FileSystemResource(outputPath);
 
         if (resource.getFile().exists()){
             log.info("file exists "+ resource.getFile().getAbsolutePath());
@@ -88,9 +78,11 @@ public class ConvertController {
 
         }
 
+        // log duration of process
         log.info("The process took :"+(System.nanoTime() - startTime)/ 1000000000.0 +" seconds");
 
         return new ResponseEntity<FileSystemResource>(resource, HttpStatus.OK);
 
     }
+
 }

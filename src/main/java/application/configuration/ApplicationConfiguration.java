@@ -1,8 +1,7 @@
 package application.configuration;
 
 import application.service.CalibreConnectionService;
-import application.service.HtmlService;
-import application.shared.GlobalVariables;
+import application.shared.GlobalServices;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +24,7 @@ public class ApplicationConfiguration {
     CalibreConnectionService calibreConnectionService;
 
     @Autowired
-    GlobalVariables globalVariables;
+    GlobalServices globalServices;
 
     private final Logger log = LoggerFactory.getLogger(ApplicationConfiguration.class);
 
@@ -44,14 +43,14 @@ public class ApplicationConfiguration {
     }
 
     @Bean
-    public GlobalVariables htmlServiceConfiguration(){
+    public GlobalServices htmlServiceConfiguration(){
 
         log.info("Setting output folder as "+env.getProperty("output-folder"));
 
         if (env.getProperty("output-folder")!=null)
-            globalVariables.setContentFolder(env.getProperty("output-folder"));
+            globalServices.setContentFolder(env.getProperty("output-folder"));
 
-        return globalVariables;
+        return globalServices;
 
     }
 
