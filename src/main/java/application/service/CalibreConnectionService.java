@@ -15,6 +15,7 @@ import java.io.InputStreamReader;
 public class CalibreConnectionService {
 
 	public static final String CONVERSION_SUCCESS = "Output saved to";
+	public static final String PDF = "PDF";
 	// In case is not in the local path
 	String callibreConvertLocation="";
 
@@ -33,17 +34,19 @@ public class CalibreConnectionService {
 	public String convert(String inputFilePath, String format){
 
 		String filePathWithNoSuffix=stripSuffix(inputFilePath);
+		String command="";
 
-		String command = "ebook-convert "+inputFilePath + " " + filePathWithNoSuffix+"."+format;
+		// Si hay que transformar a pdf, usar la app wkhtmltopdf, si no ebook-convert de Callibre
+		command = ( format.equalsIgnoreCase(PDF) ) ? "/usr/local/bin/wkhtmltopdf.sh " : this.getCallibreConvertLocation() +"ebook-convert ";
 
-		// add the ebook-convert location path if needed
-		command=this.getCallibreConvertLocation() +command;
+		command += inputFilePath + " " + filePathWithNoSuffix+"."+format;
 
-		log.info("Running ebook-convert: "+command);
+
+		log.info("Running conversion command:\n"+command);
 
 		String commandResponse = executeCommand(command);
 
-		if (commandResponse.contains("Output saved to")){
+		if (commandResponse.contains(CONVERSION_SUCCESS)){
 
 			log.info(commandResponse);
 

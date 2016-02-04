@@ -48,11 +48,11 @@ public class CalibreConnectionTest {
     @Test
     public void convertServiceTest(){
         String htmlUrl = "http://jessewarden.com/2008/11/agile-chronicles-1-stressful.html";
-        String calibreConvertLocation = "/Applications/calibre.app/Contents/console.app/Contents/MacOS";
+        String calibreConvertLocation = "/Applications/calibre.app/Contents/console.app/Contents/MacOS/";
         calibreConnectionService.setCallibreConvertLocation(calibreConvertLocation);
 
         String urlToConvert = htmlUrl;
-        String outputFormat="mobi";
+        String outputFormat="pdf";
 
         String htmlContent = htmlService.getHtmlContent(urlToConvert);
         String bookTitle = "ebookContent";
