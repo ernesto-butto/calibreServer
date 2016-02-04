@@ -1,12 +1,15 @@
 package application.service;
 
+import application.controller.ConvertController;
+import application.shared.GlobalServices;
 import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestParam;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
+import java.io.File;
 
 /**
  * Created by poolebu on 1/16/16.
@@ -14,8 +17,13 @@ import java.io.InputStreamReader;
 @Service
 public class CalibreConnectionService {
 
+	@Autowired
+	HtmlService htmlService;
+
+	@Autowired
+	GlobalServices globalServices;
+
 	public static final String CONVERSION_SUCCESS = "Output saved to";
-	public static final String PDF = "PDF";
 	// In case is not in the local path
 	String callibreConvertLocation="";
 
@@ -31,22 +39,18 @@ public class CalibreConnectionService {
 	}
 
 
-	public String convert(String inputFilePath, String format){
+	public String convertUsingCallibre(String inputFilePath, String format){
 
 		String filePathWithNoSuffix=stripSuffix(inputFilePath);
-		String command="";
 
-		// Si hay que transformar a pdf, usar la app wkhtmltopdf, si no ebook-convert de Callibre
-		command = ( format.equalsIgnoreCase(PDF) ) ? "/usr/local/bin/wkhtmltopdf.sh " : this.getCallibreConvertLocation() +"ebook-convert ";
+		String command = "ebook-convert "+inputFilePath + " " + filePathWithNoSuffix+"."+format;
 
-		command += inputFilePath + " " + filePathWithNoSuffix+"."+format;
+		// add the ebook-convert location path if needed
+		command=this.getCallibreConvertLocation() +command;
 
+		String commandResponse = GlobalServices.executeCommand(command);
 
-		log.info("Running conversion command:\n"+command);
-
-		String commandResponse = executeCommand(command);
-
-		if (commandResponse.contains(CONVERSION_SUCCESS)){
+		if (commandResponse.contains("Output saved to")){
 
 			log.info(commandResponse);
 
@@ -85,30 +89,25 @@ public class CalibreConnectionService {
 
 	}
 
-	public String executeCommand(String command) {
 
-		StringBuffer output = new StringBuffer();
+	public String convert(@RequestParam(value = "htmlUrl", required = true) String htmlUrl, @RequestParam(value = "title", required = true) String title, @RequestParam(value = "outputFormat", defaultValue = "mobi") String outputFormat, ConvertController convertController) {
 
-		Process p;
-		try {
-			p = Runtime.getRuntime().exec(command);
-			p.waitFor();
-			BufferedReader reader =
-					new BufferedReader(new InputStreamReader(p.getInputStream()));
+        String outputPath;// 1 Guardar el html en local
+        log.info("Retrieving html content form url");
+        String htmlContent = htmlService.getHtmlContent(htmlUrl);
 
-			String line = "";
-			while ((line = reader.readLine())!= null) {
-				output.append(line + "\n");
-			}
+        log.info("Saving html content to file");
+        File htmlContentFile = htmlService.saveHtmlContentToFile(htmlContent, globalServices.getContentFolder(), title);
 
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+        // 2 correr ebook convert
+        log.info("Converting html content");
+        outputPath = convertUsingCallibre(htmlContentFile.getAbsolutePath(), outputFormat);
 
-		return output.toString();
+        if (outputPath == null) {
+            log.error("There was an error converting the ebook ");
+            throw new RuntimeException("There was an error converting the ebook");
 
-	}
-
-
-
+        }
+        return outputPath;
+    }
 }

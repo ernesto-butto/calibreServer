@@ -2,7 +2,7 @@ package service;
 
 import application.Application;
 import application.service.HtmlService;
-import application.shared.GlobalVariables;
+import application.shared.GlobalServices;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -31,14 +31,14 @@ public class CalibreConnectionTest {
     HtmlService htmlService;
 
     @Autowired
-    GlobalVariables globalVariables;
+    GlobalServices globalServices;
 
 
     @Test
     @Ignore
     public void executeCommandTest(){
 
-        String outPut = calibreConnectionService.executeCommand("ls");
+        String outPut = GlobalServices.executeCommand("ls");
 
         Assert.assertTrue(!outPut.isEmpty());
 
@@ -57,10 +57,10 @@ public class CalibreConnectionTest {
         String htmlContent = htmlService.getHtmlContent(urlToConvert);
         String bookTitle = "ebookContent";
 
-        File file = htmlService.saveHtmlContentToFile(htmlContent,globalVariables.getContentFolder(), bookTitle);
+        File file = htmlService.saveHtmlContentToFile(htmlContent, globalServices.getContentFolder(), bookTitle);
 
         // 2 correr ebook convert
-        calibreConnectionService.convert(file.getPath(),outputFormat);
+        calibreConnectionService.convertUsingCallibre(file.getPath(), outputFormat);
 
 
     }
