@@ -2,7 +2,7 @@ package service;
 
 import application.Application;
 import application.service.WkHtmlToPdfService;
-import application.shared.GlobalServices;
+import application.service.SharedServices;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -25,7 +25,7 @@ public class WkHtmlToPdfServiceTest {
     WkHtmlToPdfService wkHtmlToPdfService;
 
     @Autowired
-    GlobalServices globalServices;
+    SharedServices sharedServices;
 
     @Test
     public void WkHtmlToPdfServiceConvertTest(){

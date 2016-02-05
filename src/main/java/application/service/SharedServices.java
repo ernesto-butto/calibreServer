@@ -1,4 +1,4 @@
-package application.shared;
+package application.service;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Scope;
@@ -11,11 +11,11 @@ import java.io.InputStreamReader;
  * Created by poolebu on 1/19/16.
  */
 @Service
-public class GlobalServices {
+public class SharedServices {
 
     String contentFolder="/Users/poolebu/Desktop/ebookContentDir/";
 
-	public static String executeCommand(String command) {
+	public String executeCommand(String command) {
 
 		StringBuffer output = new StringBuffer();
 

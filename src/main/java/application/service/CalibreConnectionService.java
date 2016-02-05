@@ -1,7 +1,6 @@
 package application.service;
 
 import application.controller.ConvertController;
-import application.shared.GlobalServices;
 import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,7 +20,7 @@ public class CalibreConnectionService {
 	HtmlService htmlService;
 
 	@Autowired
-	GlobalServices globalServices;
+	SharedServices sharedServices;
 
 	public static final String CONVERSION_SUCCESS = "Output saved to";
 	// In case is not in the local path
@@ -48,7 +47,7 @@ public class CalibreConnectionService {
 		// add the ebook-convert location path if needed
 		command=this.getCallibreConvertLocation() +command;
 
-		String commandResponse = GlobalServices.executeCommand(command);
+		String commandResponse = sharedServices.executeCommand(command);
 
 		if (commandResponse.contains("Output saved to")){
 
@@ -97,7 +96,7 @@ public class CalibreConnectionService {
         String htmlContent = htmlService.getHtmlContent(htmlUrl);
 
         log.info("Saving html content to file");
-        File htmlContentFile = htmlService.saveHtmlContentToFile(htmlContent, globalServices.getContentFolder(), title);
+        File htmlContentFile = htmlService.saveHtmlContentToFile(htmlContent, sharedServices.getContentFolder(), title);
 
         // 2 correr ebook convert
         log.info("Converting html content");

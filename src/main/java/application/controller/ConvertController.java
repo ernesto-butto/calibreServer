@@ -3,7 +3,7 @@ package application.controller;
 import application.service.CalibreConnectionService;
 import application.service.HtmlService;
 import application.service.WkHtmlToPdfService;
-import application.shared.GlobalServices;
+import application.service.SharedServices;
 import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,7 +29,7 @@ public class ConvertController {
     HtmlService htmlService;
 
     @Autowired
-    GlobalServices globalServices;
+    SharedServices sharedServices;
 
 
     @RequestMapping(value = "/convert", method = RequestMethod.GET )
